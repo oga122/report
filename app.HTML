@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音訓クイズ</title>
+    <style>
+        body {
+            background-color: rgb(145, 2, 176);
+            font-family: Arial, sans-serif;
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            color: rgb(0, 0, 0);
+        }
+        .question {
+            margin-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        .result {
+            margin-top: 10px;
+        }
+        .feedback {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .explanation {
+            margin-top: 5px;
+            font-style: italic;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>漢字の音訓クイズ</h1>
+        <div id="quiz"></div>
+        <button id="submit-btn" onclick="submitQuiz()">送信</button>
+        <button onclick="resetQuiz()">リセット</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "春の音読みはどっち？",
+                options: ["はる", "しゅん"],
+                correct: "しゅん",
+                explanation: "「春」の音読みは「しゅん」で、訓読みは「はる」です。"
+            },
+            {
+                question: "音の訓読みはどっち？",
+                options: ["おと", "おん"],
+                correct: "おと",
+                explanation: "「音」の音読みは「おん」で、訓読みは「おと」です。"
+            },
+            {
+                question: "庭の音読みはどっち？",
+                options: ["にわ", "てい"],
+                correct: "てい",
+                explanation: "「庭」の音読みは「てい」で、訓読みは「にわ」です。"
+            },
+            {
+                question: "一の訓読みはどっち？",
+                options: ["いち", "ひと"],
+                correct: "ひと",
+                explanation: "「一」の音読みは「いち」で、訓読みは「ひと」です。"
+            },
+            {
+                question: "金の音読みは？",
+                options: ["きん", "かね"],
+                correct: "きん",
+                explanation: "「金」の音読みは「きん」で、訓読みは「かね」です。"
+            },
+            {
+                question: "火の訓読みは？",
+                options: ["ひ", "か"],
+                correct: "ひ",
+                explanation: "「火」の音読みは「か」で、訓読みは「ひ」です。"
+            },
+            {
+                question: "鳥の音読みは？",
+                options: ["とり", "ちょう"],
+                correct: "ちょう",
+                explanation: "「鳥」の音読みは「ちょう」で、訓読みは「とり」です。"
+            },
+            {
+                question: "水の訓読みは？",
+                options: ["すい", "みず"],
+                correct: "みず",
+                explanation: "「水」の音読みは「すい」で、訓読みは「みず」です。"
+            },
+            {
+                question: "犬の音読みは？",
+                options: ["いぬ", "けん"],
+                correct: "けん",
+                explanation: "「犬」の音読みは「けん」で、訓読みは「いぬ」です。"
+            },
+            {
+                question: "山の訓読みは？",
+                options: ["やま", "さん"],
+                correct: "やま",
+                explanation: "「山」の音読みは「さん」で、訓読みは「やま」です。"
+            },
+            {
+                question: "木の音読みは？",
+                options: ["き", "もく"],
+                correct: "もく",
+                explanation: "「木」の音読みは「もく」で、訓読みは「き」です。"
+            },
+            {
+                question: "月の音読みは？",
+                options: ["つき", "げつ"],
+                correct: "げつ",
+                explanation: "「月」の音読みは「げつ」で、訓読みは「つき」です。"
+            },
+            {
+                question: "学の訓読みは？",
+                options: ["がく", "まな"],
+                correct: "まな",
+                explanation: "「学校」の音読みは「がく」で、訓読みは「まな」です。"
+            },
+            {
+                question: "本の音読みは？",
+                options: ["ほん", "もと"],
+                correct: "ほん",
+                explanation: "「本」の音読みは「ほん」で、訓読みは「もと」です。"
+            },
+            {
+                question: "車の音読みは？",
+                options: ["しゃ", "くるま"],
+                correct: "しゃ",
+                explanation: "「車」の音読みは「しゃ」で、訓読みは「くるま」です。"
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function loadQuiz() {
+            quizContainer.innerHTML = '';
+
+            
+            const selectedQuizzes = shuffle([...quizData]).slice(0, 5);
+
+            selectedQuizzes.forEach((quizItem, index) => {
+                const questionElem = document.createElement('div');
+                questionElem.classList.add('question');
+                questionElem.innerHTML = `<h3>${quizItem.question}</h3>`;
+                const optionsElem = document.createElement('ul');
+                optionsElem.classList.add('options');
+
+                
+                const shuffledOptions = shuffle([...quizItem.options]);
+
+                shuffledOptions.forEach(option => {
+                    const optionElem = document.createElement('li');
+                    optionElem.innerHTML = `<label><input type="radio" name="question${index}" value="${option}"> ${option}</label>`;
+                    optionsElem.appendChild(optionElem);
+                });
+
+                questionElem.appendChild(optionsElem);
+                questionElem.innerHTML += `<div id="feedback${index}" class="feedback"></div>`;
+                questionElem.innerHTML += `<div id="explanation${index}" class="explanation"></div>`;
+                quizContainer.appendChild(questionElem);
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            const selectedQuizzes = quizContainer.querySelectorAll('.question');
+            selectedQuizzes.forEach((quizItem, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedbackElem = document.getElementById(`feedback${index}`);
+                const explanationElem = document.getElementById(`explanation${index}`);
+                const quizDataIndex = quizData.findIndex(item => item.question === quizItem.querySelector('h3').innerText);
+
+                if (selectedOption) {
+                    if (selectedOption.value === quizData[quizDataIndex].correct) {
+                        score++;
+                        feedbackElem.innerHTML = '正解！';
+                        feedbackElem.style.color = 'green';
+                    } else {
+                        feedbackElem.innerHTML = `不正解。正しい答えは「${quizData[quizDataIndex].correct}」です。`;
+                        feedbackElem.style.color = 'red';
+                    }
+                } else {
+                    feedbackElem.innerHTML = '選択されていません。';
+                    feedbackElem.style.color = 'orange';
+                }
+                explanationElem.innerHTML = quizData[quizDataIndex].explanation;
+            });
+            const resultContainer = document.getElementById('result');
+            if (score === selectedQuizzes.length) {
+                resultContainer.innerHTML = `あなたのスコアは ${score} / ${selectedQuizzes.length} です。合格！`;
+            } else {
+                resultContainer.innerHTML = `あなたのスコアは ${score} / ${selectedQuizzes.length} です。`;
+            }
+            document.getElementById('submit-btn').disabled = true;
+        }
+
+        function resetQuiz() {
+            loadQuiz();
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = '';
+            document.getElementById('submit-btn').disabled = false;
+        }
+
+        loadQuiz();
+    </script>
+</body>
+</html>
